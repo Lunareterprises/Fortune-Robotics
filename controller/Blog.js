@@ -1,5 +1,5 @@
 
-////BLOG CONTROLLER////CASE STUDY/////RESEARCH/////CURRENT PROJECTS/////BEHIND THE SCENES////
+////BLOG CONTROLLER////CASE STUDY/////RESEARCH//////BEHIND THE SCENES////
 
 var model = require('../model/Blog')
 var formidable = require('formidable')
@@ -44,11 +44,7 @@ module.exports.AddBlog = async (req, res) => {
                         process.cwd() +
                         "/uploads/case_study/" + files.image.originalFilename
                 }
-                if (type == 'current_projects') {
-                    var newPath =
-                        process.cwd() +
-                        "/uploads/current_projects/" + files.image.originalFilename
-                }
+
                 if (type == 'behind_the_scenes') {
                     var newPath =
                         process.cwd() +
@@ -69,9 +65,7 @@ module.exports.AddBlog = async (req, res) => {
                 if (type == 'case_study') {
                     var imagepath = "/uploads/case_study/" + files.image.originalFilename
                 }
-                if (type == 'current_projects') {
-                    var imagepath = "/uploads/current_projects/" + files.image.originalFilename
-                }
+
                 if (type == 'behind_the_scenes') {
                     var imagepath = "/uploads/behind_the_scenes/" + files.image.originalFilename
                 }
@@ -85,9 +79,6 @@ module.exports.AddBlog = async (req, res) => {
                     var InsertBlog = await model.AddBlogQuery(type, title, null,date, description, null, client_name, client_location, imagepath, null)
                 }
                 if (type == 'case_study') {
-                    var InsertBlog = await model.AddBlogQuery(type, title, category_tags, date, description, null, client_name, client_location, imagepath, null)
-                }
-                if (type == 'current_projects') {
                     var InsertBlog = await model.AddBlogQuery(type, title, category_tags, date, description, null, client_name, client_location, imagepath, null)
                 }
                 if (type == 'behind_the_scenes') {
@@ -129,12 +120,7 @@ module.exports.AddBlog = async (req, res) => {
 module.exports.listBlog = async (req, res) => {
     try {
         let { type, bl_id } = req.body || {};
-        if (!type) {
-            return res.send({
-                result: false,
-                message: "Type is required"
-            })
-        }
+        
         let condition = ``;
         if (bl_id) {
             condition = `where bl_id = '${bl_id}' `;
@@ -147,9 +133,6 @@ module.exports.listBlog = async (req, res) => {
         }
         if (type == 'case_study') {
             condition = `where bl_type = 'case_study' `;
-        }
-        if (type == 'current_projects') {
-            condition = `where bl_type = 'current_projects' `;
         }
         if (type == 'behind_the_scenes') {
             condition = `where bl_type = 'behind_the_scenes' `;
@@ -317,11 +300,6 @@ module.exports.EditBlog = async (req, res) => {
                                 process.cwd() +
                                 "/uploads/case_study/" + files.image.originalFilename
                         }
-                        if (type == 'current_projects') {
-                            var newPath =
-                                process.cwd() +
-                                "/uploads/current_projects/" + files.image.originalFilename
-                        }
                         if (type == 'behind_the_scenes') {
                             var newPath =
                                 process.cwd() +
@@ -341,9 +319,6 @@ module.exports.EditBlog = async (req, res) => {
                         }
                         if (type == 'case_study') {
                             var imagepath = "/uploads/case_study/" + files.image.originalFilename
-                        }
-                        if (type == 'current_projects') {
-                            var imagepath = "/uploads/current_projects/" + files.image.originalFilename
                         }
                         if (type == 'behind_the_scenes') {
                             var imagepath = "/uploads/behind_the_scenes/" + files.image.originalFilename

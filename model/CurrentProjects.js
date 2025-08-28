@@ -2,62 +2,54 @@ var db = require("../config/db");
 var util = require("util");
 const query = util.promisify(db.query).bind(db);
 
-// module.exports.checkProduct = async (name) => {
-//     var Query = `select * from products where lower(t_name)= ?`;
-//     var data = query(Query, [name.toLowerCase()]);
+
+module.exports.AddCurrentProjectQuery = async (name, intro, pre_version, pre_dimension, pre_functionality, new_version, new_dimension, new_functionality, current_progress, project_process, service, our_robot_include, requirement, feature) => {
+    var Query = `INSERT INTO current_projects 
+    (cp_name, cp_intro, cp_pre_version, cp_pre_dimension, cp_pre_functionality, cp_New_version, cp_new_dimension, cp_new_functionality, cp_current_progress, cp_process, cp_service, cp_our_robot_include, cp_requirement, cp_feature) 
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    var data = query(Query, [name, intro, pre_version, pre_dimension, pre_functionality, new_version, new_dimension, new_functionality, current_progress, project_process, service, our_robot_include, requirement, feature]);
+    return data;
+};
+
+module.exports.AddCurrentProjectImages = async (product_id, imagePath) => {
+    var Query = `update current_projects set cp_image =? where cp_id = ?`;
+    var data = await query(Query, [imagePath,product_id]);
+    return data;
+}
+
+module.exports.AddNewProjectFiles = async (cp_id, imagePath) => {
+    var Query = `update current_projects set cp_new_image =? where cp_id = ?`;
+    var data = query(Query, [imagePath, cp_id]);
+    return data;
+};
+
+module.exports.listCurrentProjectQuery = async (condition) => {
+    var Query = `SELECT * FROM current_projects ${condition}`;
+    var data = await query(Query);
+    return data;
+}
+
+
+module.exports.RemoveCurrentProject = async (cp_id) => {
+    var Query = `DELETE FROM current_projects WHERE cp_id = ?`;
+    var data = await query(Query, [cp_id]);
+    return data;
+}
+
+// module.exports.DeleteFilesQuery = async (cp_id, fileKeys) => {
+//     var Query = `delete from product_images where pi_cp_id=? and pi_id not in (${fileKeys})`;
+//     var data = await query(Query, [cp_id, fileKeys]);
 //     return data;
-// };
+// }
 
-module.exports.AddProductQuery = async (name, rating, short_description, description, price, discount_price, discount, highlights, product_used_places, dimensions, max_speed, battery_life, charging_time, sensors, connectivity, material) => {
-    var Query = `insert into products (p_name,p_rating,p_short_descrption,p_descrption,p_price,p_discount_price,p_discount,p_highlights,p_product_used_places,p_dimensions,p_max_speed,p_battery_life,p_charging_time,p_sensors,p_connectivity,p_material) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-    var data = query(Query, [name, rating, short_description, description, price, discount_price, discount, highlights, product_used_places, dimensions, max_speed, battery_life, charging_time, sensors, connectivity, material]);
-    return data;
-};
-
-module.exports.AddProductImages=async(product_id,imagePath)=>{
-  var Query=`insert into product_images (pi_cp_id,pi_image) values(?,?)`;
-  var data= await query(Query,[product_id,imagePath]);
-  return data;
-}
-
-module.exports.AddBrochureFiles = async (cp_id,imagePath) => {
-    var Query = `update products set p_brochure =? where cp_id = ?`;
-    var data = query(Query, [imagePath,cp_id]);
-    return data;
-};
-
-module.exports.listProductQuery=async(condition)=>{
-  var Query=`SELECT * FROM products ${condition}`;
-  var data= await query(Query);
-  return data;
-}
-
-module.exports.listProductImageQuery=async(cp_id)=>{
-  var Query=`SELECT * FROM product_images where pi_cp_id =?`;
-  var data= await query(Query,[cp_id]);
-  return data;
-}
-
-module.exports.RemoveProduct=async(cp_id)=>{
-  var Query=`DELETE FROM products WHERE cp_id = ?`;
-  var data= await query(Query,[cp_id]);
-  return data;
-}
-
-module.exports.DeleteFilesQuery=async(cp_id, fileKeys)=>{
-  var Query=`delete from product_images where pi_cp_id=? and pi_id not in (${fileKeys})`;
-  var data= await query(Query,[cp_id, fileKeys]);
-  return data;
-}
-
-module.exports.CheckProductQuery = async (cp_id) => {
-    var Query = `select * from products where cp_id= ?`;
+module.exports.CheckCurrentProjectQuery = async (cp_id) => {
+    var Query = `select * from current_projects where cp_id= ?`;
     var data = query(Query, [cp_id]);
     return data;
 };
 
-module.exports.ChangeProduct = async (condition, cp_id) => {
-    var Query = `update products ${condition} where cp_id = ?`;
+module.exports.ChangeCurrentProject = async (condition, cp_id) => {
+    var Query = `update current_projects ${condition} where cp_id = ?`;
     var data = query(Query, [cp_id]);
     return data;
 };

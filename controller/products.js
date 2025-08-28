@@ -14,8 +14,8 @@ module.exports.AddProduct = async (req, res) => {
                     data: err,
                 });
             }
-            let { name, rating, short_description, description, price, discount_price, discount, highlights, product_used_places, dimensions, max_speed, battery_life, charging_time, sensors, connectivity, material } = fields
-            if (!name || !description || !short_description || !rating || !price || !discount_price || !discount || !highlights || !product_used_places || !dimensions || !max_speed || !battery_life || !charging_time || !sensors || !connectivity || !material) {
+            let { name,buy_rent, rob_model, short_description, description, price, discount_price, discount, highlights, product_used_places, dimensions, screen, camera, body_colour, mb_ram, stand_by_time, head_pitch_angle, system, navigation_accuracy, weight, max_speed, battery_type, battery_life, charging_time, sensors, connectivity, material } = fields
+            if (!name || !description || !short_description) {
                 return res.send({
                     result: false,
                     messaage: "All fields are required"
@@ -23,7 +23,32 @@ module.exports.AddProduct = async (req, res) => {
             }
             // var checkProduct = await model.checkProduct(name)
             // console.log(checkProduct);
-            var Insertproduct = await model.AddProductQuery(name, rating, short_description, description, price, discount_price, discount, highlights, product_used_places, dimensions, max_speed, battery_life, charging_time, sensors, connectivity, material)
+            var Insertproduct = await model.AddProductQuery(name,buy_rent,
+                rob_model,
+                short_description,
+                description,
+                price,
+                discount_price,
+                discount,
+                highlights,
+                product_used_places,
+                dimensions,
+                max_speed,
+                battery_life,
+                charging_time,
+                sensors,
+                connectivity,
+                material,
+                screen,
+                camera,
+                body_colour,
+                mb_ram,
+                stand_by_time,
+                head_pitch_angle,
+                system,
+                navigation_accuracy,
+                weight,
+                battery_type)
             if (Insertproduct.affectedRows > 0) {
 
                 let product_id = Insertproduct.insertId
@@ -197,7 +222,7 @@ module.exports.EditProduct = async (req, res) => {
                 });
             }
 
-            let { p_id, name, rating, short_description, description, price, discount_price, discount, highlights, product_used_places, dimensions, max_speed, battery_life, charging_time, sensors, connectivity, material } = fields
+            let { p_id, name,buy_rent, rob_model, short_description, description, price, discount_price, discount, highlights, product_used_places, dimensions, screen, camera, body_colour, mb_ram, stand_by_time, head_pitch_angle, system, navigation_accuracy, weight, max_speed, battery_type, battery_life, charging_time, sensors, connectivity, material } = fields
             console.log("p_id", p_id);
 
             if (!p_id) {
@@ -221,11 +246,18 @@ module.exports.EditProduct = async (req, res) => {
                         condition += `, p_name = "${name}"`;
                     }
                 }
-                if (rating) {
+                if (buy_rent) {
                     if (condition == '') {
-                        condition = `SET p_rating = "${rating}" `;
+                        condition = `SET p_buy_rent = "${buy_rent}" `;
                     } else {
-                        condition += `, p_rating = "${rating}"`;
+                        condition += `, p_buy_rent = "${buy_rent}"`;
+                    }
+                }
+                if (rob_model) {
+                    if (condition == '') {
+                        condition = `SET p_model = "${rob_model}" `;
+                    } else {
+                        condition += `, p_model = "${rob_model}"`;
                     }
                 }
                 if (short_description) {
@@ -284,11 +316,81 @@ module.exports.EditProduct = async (req, res) => {
                         condition += `, p_dimensions = "${dimensions}"`;
                     }
                 }
+                if (screen) {
+                    if (condition == '') {
+                        condition = `SET p_screen = "${screen}" `;
+                    } else {
+                        condition += `, p_screen = "${screen}"`;
+                    }
+                }
+                if (camera) {
+                    if (condition == '') {
+                        condition = `SET p_camera = "${camera}" `;
+                    } else {
+                        condition += `, p_camera = "${camera}"`;
+                    }
+                }
+                if (body_colour) {
+                    if (condition == '') {
+                        condition = `SET p_body_colour = "${body_colour}" `;
+                    } else {
+                        condition += `, p_body_colour = "${body_colour}"`;
+                    }
+                }
+                if (mb_ram) {
+                    if (condition == '') {
+                        condition = `SET p_ram = "${mb_ram}" `;
+                    } else {
+                        condition += `, p_ram = "${mb_ram}"`;
+                    }
+                }
+                if (stand_by_time) {
+                    if (condition == '') {
+                        condition = `SET p_stand_by_time = "${stand_by_time}" `;
+                    } else {
+                        condition += `, p_stand_by_time = "${stand_by_time}"`;
+                    }
+                }
+                if (head_pitch_angle) {
+                    if (condition == '') {
+                        condition = `SET p_head_pitch_angle = "${head_pitch_angle}" `;
+                    } else {
+                        condition += `, p_head_pitch_angle = "${head_pitch_angle}"`;
+                    }
+                }
+                if (system) {
+                    if (condition == '') {
+                        condition = `SET p_system = "${system}" `;
+                    } else {
+                        condition += `, p_system = "${system}"`;
+                    }
+                }
+                if (navigation_accuracy) {
+                    if (condition == '') {
+                        condition = `SET p_navigation_accuracy = "${navigation_accuracy}" `;
+                    } else {
+                        condition += `, p_navigation_accuracy = "${navigation_accuracy}"`;
+                    }
+                }
+                if (weight) {
+                    if (condition == '') {
+                        condition = `SET p_weight = "${weight}" `;
+                    } else {
+                        condition += `, p_weight = "${weight}"`;
+                    }
+                }
                 if (max_speed) {
                     if (condition == '') {
                         condition = `SET p_max_speed = "${max_speed}" `;
                     } else {
                         condition += `, p_max_speed = "${max_speed}"`;
+                    }
+                }
+                if (battery_type) {
+                    if (condition == '') {
+                        condition = `SET p_battery_type = "${battery_type}" `;
+                    } else {
+                        condition += `, p_battery_type = "${battery_type}"`;
                     }
                 }
                 if (battery_life) {
@@ -328,13 +430,14 @@ module.exports.EditProduct = async (req, res) => {
                 }
 
 
+
                 if (condition !== '') {
                     var EditProduct = await model.ChangeProduct(condition, p_id)
                 }
                 if (EditProduct.affectedRows) {
 
                     if (files) {
-                        const fileKeys = Object.keys(files).filter(item => item !== 'image');
+                        const fileKeys = Object.keys(files).filter(item => item !== 'image' && item !== 'brochure');
                         console.log("fileKeys :", fileKeys);
 
                         if (fileKeys.length > 0) {
@@ -368,10 +471,22 @@ module.exports.EditProduct = async (req, res) => {
                             }
                         }
 
-                        return res.status(200).json({
-                            result: true,
-                            message: 'Product Details Updated Successfully',
-                        });
+                    }
+
+                    if (files.brochure) {
+                        files.brochure = Array.isArray(files.brochure) ? files.brochure[0] : files.brochure;
+
+                        var oldPath = files.brochure.filepath;
+                        var newPath =
+                            process.cwd() +
+                            "/uploads/brochures/" + files.brochure.originalFilename
+                        let rawData = fs.readFileSync(oldPath);
+                        console.log(oldPath);
+
+                        fs.writeFileSync(newPath, rawData)
+                        var imagepath = "/uploads/brochures/" + files.brochure.originalFilename
+
+                        var InsertTestimonialimage = await model.AddBrochureFiles(p_id, imagepath)
 
                     }
                     return res.send({

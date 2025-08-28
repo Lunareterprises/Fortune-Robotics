@@ -29,6 +29,31 @@ route.post('/list/blog',listBlog)
 route.post('/edit/blog',EditBlog)
 route.post('/delete/blog',DeleteBlog)
 
+let{AddCurrentProject,listCurrentProject,EditCurrentProject,DeleteCurrentProject}=require('./controller/CurrentProjects')
+route.post('/add/current_project',AddCurrentProject)
+route.post('/list/current_project',listCurrentProject)
+route.post('/edit/current_project',EditCurrentProject)
+route.post('/delete/current_project',DeleteCurrentProject)
+
+let{login} = require('./controller/login')
+route.post('/login',login)
+
+let{ForgotPassword,verifyOtp,ResetPassword} = require('./controller/forgotpassword')
+route.post('/forgotpassword',ForgotPassword)
+route.post('/verify-otp',verifyOtp)
+route.post('/change/password',ResetPassword)
+
+
+let{AddRentNow,listRentNow,DeleteRentNow}=require('./controller/RentNow')
+route.post('/add/rent',AddRentNow)
+route.post('/list/rent',listRentNow)
+route.post('/delete/rent',DeleteRentNow)
+
+let{AddQuote,listQuote,DeleteQuote}=require('./controller/Quote')
+route.post('/add/quote',AddQuote)
+route.post('/list/quote',listQuote)
+route.post('/delete/quote',DeleteQuote)
+
 module.exports = route
 
 

@@ -14,8 +14,15 @@ module.exports.AddBannerVideo = async (req, res) => {
                     data: err,
                 });
             }
-            console.log("image:",files.image);
-            console.log("video:",files.video);
+            let { title,sub_title,page_name } = fields
+            if (!page_name) {
+                 return res.send({
+                    result: false,
+                    message: "page name is required",
+                });
+            }
+            console.log("image:", files.image);
+            console.log("video:", files.video);
 
 
             if (files) {
@@ -23,42 +30,42 @@ module.exports.AddBannerVideo = async (req, res) => {
                     files.image = Array.isArray(files.image) ? files.image[0] : files.image;
 
                     var oldPath = files.image.filepath;
-                var newPath =
-                    process.cwd() +
-                    "/uploads/banner/" +
-                    files.image.originalFilename;
-                let rawData = fs.readFileSync(oldPath);
-                fs.writeFile(newPath, rawData, async function (err) {
-                    if (err) console.log(err);
-                    let type = 'image'
-                    let filepathh =
-                        "/uploads/banner/" + files.image.originalFilename;
-                    let AddBanner = await model.AddBannerQuery(type,filepathh)
-                    // console.log(AddBanner.insertId, "AddBanner");
+                    var newPath =
+                        process.cwd() +
+                        "/uploads/banner/" +
+                        files.image.originalFilename;
+                    let rawData = fs.readFileSync(oldPath);
+                    fs.writeFile(newPath, rawData, async function (err) {
+                        if (err) console.log(err);
+                        let type = 'image'
+                        let filepathh =
+                            "/uploads/banner/" + files.image.originalFilename;
+                        let AddBanner = await model.AddBannerQuery(type,title,sub_title,filepathh,page_name)
+                        // console.log(AddBanner.insertId, "AddBanner");
 
-                })
+                    })
                 }
 
                 if (files.video) {
                     files.video = Array.isArray(files.video) ? files.video[0] : files.video;
 
                     var oldPath = files.video.filepath;
-                var newPath =
-                    process.cwd() +
-                    "/uploads/banner/" +
-                    files.video.originalFilename;
-                let rawData = fs.readFileSync(oldPath);
-                fs.writeFile(newPath, rawData, async function (err) {
-                    if (err) console.log(err);
-                    let type = 'video'
-                    let filepathh =
-                        "/uploads/banner/" + files.video.originalFilename;
-                    let AddBanner = await model.AddBannerQuery(type,filepathh)
-                    // console.log(AddBanner.insertId, "AddBanner");
+                    var newPath =
+                        process.cwd() +
+                        "/uploads/banner/" +
+                        files.video.originalFilename;
+                    let rawData = fs.readFileSync(oldPath);
+                    fs.writeFile(newPath, rawData, async function (err) {
+                        if (err) console.log(err);
+                        let type = 'video'
+                        let filepathh =
+                            "/uploads/banner/" + files.video.originalFilename;
+                        let AddBanner = await model.AddBannerQuery(type,title,sub_title,filepathh,page_name)
+                        // console.log(AddBanner.insertId, "AddBanner");
 
-                })
+                    })
                 }
-                
+
                 return res.send({
                     result: true,
                     message: "banner Uploaded sucessfully"

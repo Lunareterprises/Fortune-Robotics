@@ -39,7 +39,7 @@ module.exports.login = async (req, res) => {
       u_id: checkUser[0].u_id,
       email: checkUser[0].u_email,
     };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
 
     // Respond with user data and token
     return res.status(200).json({

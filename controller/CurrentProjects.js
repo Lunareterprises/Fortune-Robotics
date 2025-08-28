@@ -14,7 +14,7 @@ module.exports.AddCurrentProject = async (req, res) => {
                     data: err,
                 });
             }
-            let { name, intro, pre_version, pre_dimension, pre_functionality, New_version, new_dimension, new_functionality, current_progress,process,service,our_robot_include,requirement,feature } = fields
+            let { name, intro, pre_version, pre_dimension, pre_functionality, new_version, new_dimension, new_functionality, current_progress, project_process, service, our_robot_include, requirement, feature } = fields
             if (!name || !intro) {
                 return res.send({
                     result: false,
@@ -23,7 +23,7 @@ module.exports.AddCurrentProject = async (req, res) => {
             }
             // var checkCurrentProject = await model.checkCurrentProject(name)
             // console.log(checkCurrentProject);
-            var InsertCurrentProject = await model.AddCurrentProjectQuery(name,intro, pre_version, pre_dimension, pre_functionality, New_version, new_dimension, new_functionality, current_progress,process,service,our_robot_include,requirement,feature)
+            var InsertCurrentProject = await model.AddCurrentProjectQuery(name, intro, pre_version, pre_dimension, pre_functionality, new_version, new_dimension, new_functionality, current_progress, project_process, service, our_robot_include, requirement, feature)
             if (InsertCurrentProject.affectedRows > 0) {
 
                 let CurrentProject_id = InsertCurrentProject.insertId
@@ -36,51 +36,65 @@ module.exports.AddCurrentProject = async (req, res) => {
 
 
                     for (const file of imageFiles) {
-                        console.log("file :", file);
+                        console.log("file:", file);
 
                         if (!file || !file.filepath || !file.originalFilename) continue;
 
                         const oldPath = file.filepath;
-                        const newPath = path.join(process.cwd(), '/uploads/CurrentProjects', file.originalFilename);
+                        // const uploadDir = path.join(process.cwd(), "uploads", "current_projects");
+                const uploadDir = path.join(process.cwd(), 'uploads', 'current_projects');
 
+                        // Ensure directory exists
+                        if (!fs.existsSync(uploadDir)) {
+                            fs.mkdirSync(uploadDir, { recursive: true });
+                        }
+
+                        const newPath = path.join(uploadDir, file.originalFilename);
+
+                        // Move file
                         const rawData = fs.readFileSync(oldPath);
                         fs.writeFileSync(newPath, rawData);
 
-                        const imagePath = "/uploads/CurrentProjects/" + file.originalFilename;
+                        const imagePath = "/uploads/current_projects/" + file.originalFilename;
 
-                        var insertImage = await model.AddCurrentProjectImages(CurrentProject_id, imagePath);
-
+                        const insertImage = await model.AddCurrentProjectImages(CurrentProject_id, imagePath);
                         console.log("Insert result:", insertImage);
-                        if (insertImage.affectedRows == 0) {
+
+                        if (insertImage.affectedRows === 0) {
                             return res.send({
                                 result: false,
-                                message: `failed to insert CurrentProject image ${file.originalFilename}`
-                            })
+                                message: `Failed to insert CurrentProject image ${file.originalFilename}`
+                            });
                         }
                     }
 
                     for (const file of newprojectFiles) {
-                        console.log("file :", file);
+                        console.log("file:", file);
 
                         if (!file || !file.filepath || !file.originalFilename) continue;
 
                         const oldPath = file.filepath;
-                        const newPath = path.join(process.cwd(), '/uploads/CurrentProjects', file.originalFilename);
+                        const uploadDir = path.join(process.cwd(), "uploads", "current_projects");
+
+                        if (!fs.existsSync(uploadDir)) {
+                            fs.mkdirSync(uploadDir, { recursive: true });
+                        }
+
+                        const newPath = path.join(uploadDir, file.originalFilename);
 
                         const rawData = fs.readFileSync(oldPath);
                         fs.writeFileSync(newPath, rawData);
 
-                        const imagePath = "/uploads/CurrentProjects/" + file.originalFilename;
+                        const imagePath = "/uploads/current_projects/" + file.originalFilename;
 
-                        var insertnewprojectFiles = await model.AddNewProjectFiles(CurrentProject_id, imagePath);
+                        const insertNewProjectFile = await model.AddNewProjectFiles(CurrentProject_id, imagePath);
+                        console.log("Insert result:", insertNewProjectFile);
 
-                        console.log("Insert result:", insertnewprojectFiles);
-                        
-                        if (insertnewprojectFiles.affectedRows == 0) {
+                        if (insertNewProjectFile.affectedRows === 0) {
                             return res.send({
                                 result: false,
-                                message: `failed to insert new project file ${file.originalFilename}`
-                            })
+                                message: `Failed to insert new project file ${file.originalFilename}`
+                            });
                         }
                     }
 
@@ -127,18 +141,18 @@ module.exports.listCurrentProject = async (req, res) => {
         let listCurrentProject = await model.listCurrentProjectQuery(condition);
 
         if (listCurrentProject.length > 0) {
-            let getCurrentProjects = await Promise.all(
-                listCurrentProject.map(async (el) => {
-                    let CurrentProject_id = el.cp_id
-                    let CurrentProjectimages = await model.listCurrentProjectImageQuery(CurrentProject_id);
-                    el.CurrentProjectimages = CurrentProjectimages
-                    return el
-                })
-            )
+            // let getCurrentProjects = await Promise.all(
+            //     listCurrentProject.map(async (el) => {
+            //         let CurrentProject_id = el.cp_id
+            //         let CurrentProjectimages = await model.listCurrentProjectImageQuery(CurrentProject_id);
+            //         el.CurrentProjectimages = CurrentProjectimages
+            //         return el
+            //     })
+            // )
             return res.send({
                 result: true,
                 message: "data retrived",
-                list: getCurrentProjects
+                list: listCurrentProject
             });
 
         } else {
@@ -168,12 +182,12 @@ module.exports.DeleteCurrentProject = async (req, res) => {
         if (deleteCurrentProject.affectedRows > 0) {
             return res.send({
                 result: true,
-                message: "CurrentProject removed successfully"
+                message: "Current Project removed successfully"
             })
         } else {
             return res.send({
                 result: false,
-                message: "Failed to delete CurrentProject"
+                message: "Failed to delete Current Project"
             })
         }
     } catch (error) {
@@ -198,13 +212,13 @@ module.exports.EditCurrentProject = async (req, res) => {
                 });
             }
 
-            let { cp_id, name, rating, short_description, description, price, discount_price, discount, highlights, CurrentProject_used_places, dimensions, max_speed, battery_life, charging_time, sensors, connectivity, material } = fields
-            console.log("cp_id", cp_id);
+            let { cp_id,name, intro, pre_version, pre_dimension, pre_functionality, new_version, new_dimension, new_functionality, current_progress, project_process, service, our_robot_include, requirement, feature } = fields
+            // console.log("cp_id", cp_id);
 
             if (!cp_id) {
                 return res.send({
                     result: false,
-                    messaage: "CurrentProject Id is required"
+                    messaage: "Current Project Id is required"
                 })
             }
 
@@ -217,122 +231,109 @@ module.exports.EditCurrentProject = async (req, res) => {
                 let condition = ``;
                 if (name) {
                     if (condition == '') {
-                        condition = `SET p_name = "${name}" `;
+                        condition = `SET cp_name = "${name}" `;
                     } else {
-                        condition += `, p_name = "${name}"`;
+                        condition += `, cp_name = "${name}"`;
                     }
                 }
-                if (rating) {
+                if (intro) {
                     if (condition == '') {
-                        condition = `SET p_rating = "${rating}" `;
+                        condition = `SET cp_intro = "${intro}" `;
                     } else {
-                        condition += `, p_rating = "${rating}"`;
+                        condition += `, cp_intro = "${intro}"`;
                     }
                 }
-                if (short_description) {
+                if (pre_version) {
                     if (condition == '') {
-                        condition = `SET p_short_descrption = "${short_description}" `;
+                        condition = `SET cp_pre_version = "${pre_version}" `;
                     } else {
-                        condition += `, p_short_descrption = "${short_description}"`;
+                        condition += `, cp_pre_version = "${pre_version}"`;
                     }
                 }
-                if (description) {
+                if (pre_dimension) {
                     if (condition == '') {
-                        condition = `SET p_descrption = "${description}" `;
+                        condition = `SET cp_pre_dimension = "${pre_dimension}" `;
                     } else {
-                        condition += `, p_descrption = "${description}"`;
+                        condition += `, cp_pre_dimension = "${pre_dimension}"`;
                     }
                 }
-                if (price) {
+                if (pre_functionality) {
                     if (condition == '') {
-                        condition = `SET p_price = "${price}" `;
+                        condition = `SET cp_pre_functionality = "${pre_functionality}" `;
                     } else {
-                        condition += `, p_price = "${price}"`;
+                        condition += `, cp_pre_functionality = "${pre_functionality}"`;
                     }
                 }
-                if (discount_price) {
+                if (new_version) {
                     if (condition == '') {
-                        condition = `SET p_discount_price = "${discount_price}" `;
+                        condition = `SET cp_New_version = "${new_version}" `;
                     } else {
-                        condition += `, p_discount_price = "${discount_price}"`;
+                        condition += `, cp_New_version = "${new_version}"`;
                     }
                 }
-                if (discount) {
+                if (new_dimension) {
                     if (condition == '') {
-                        condition = `SET p_discount = "${discount}" `;
+                        condition = `SET cp_new_dimension = "${new_dimension}" `;
                     } else {
-                        condition += `, p_discount = "${discount}"`;
+                        condition += `, cp_new_dimension = "${new_dimension}"`;
                     }
                 }
-                if (highlights) {
+                if (new_functionality) {
                     if (condition == '') {
-                        condition = `SET p_highlights = "${highlights}" `;
+                        condition = `SET cp_new_functionality = "${new_functionality}" `;
                     } else {
-                        condition += `, p_highlights = "${highlights}"`;
+                        condition += `, cp_new_functionality = "${new_functionality}"`;
                     }
                 }
-                if (CurrentProject_used_places) {
+                if (current_progress) {
                     if (condition == '') {
-                        condition = `SET p_CurrentProject_used_places = "${CurrentProject_used_places}" `;
+                        condition = `SET cp_current_progress = "${current_progress}" `;
                     } else {
-                        condition += `, p_CurrentProject_used_places = "${CurrentProject_used_places}"`;
+                        condition += `, cp_current_progress = "${current_progress}"`;
                     }
                 }
-                if (dimensions) {
+                if (project_process) {
                     if (condition == '') {
-                        condition = `SET p_dimensions = "${dimensions}" `;
+                        condition = `SET cp_process = "${project_process}" `;
                     } else {
-                        condition += `, p_dimensions = "${dimensions}"`;
+                        condition += `, cp_process = "${project_process}"`;
                     }
                 }
-                if (max_speed) {
+                if (service) {
                     if (condition == '') {
-                        condition = `SET p_max_speed = "${max_speed}" `;
+                        condition = `SET cp_service = "${service}" `;
                     } else {
-                        condition += `, p_max_speed = "${max_speed}"`;
+                        condition += `, cp_service = "${service}"`;
                     }
                 }
-                if (battery_life) {
+                if (our_robot_include) {
                     if (condition == '') {
-                        condition = `SET p_battery_life = "${battery_life}" `;
+                        condition = `SET cp_our_robot_include = "${our_robot_include}" `;
                     } else {
-                        condition += `, p_battery_life = "${battery_life}"`;
+                        condition += `, cp_our_robot_include = "${our_robot_include}"`;
                     }
                 }
-                if (charging_time) {
+                if (requirement) {
                     if (condition == '') {
-                        condition = `SET p_charging_time = "${charging_time}" `;
+                        condition = `SET cp_requirement = "${requirement}" `;
                     } else {
-                        condition += `, p_charging_time = "${charging_time}"`;
+                        condition += `, cp_requirement = "${requirement}"`;
                     }
                 }
-                if (sensors) {
+                if (feature) {
                     if (condition == '') {
-                        condition = `SET p_sensors = "${sensors}" `;
+                        condition = `SET cp_feature = "${feature}" `;
                     } else {
-                        condition += `, p_sensors = "${sensors}"`;
+                        condition += `, cp_feature = "${feature}"`;
                     }
                 }
-                if (connectivity) {
-                    if (condition == '') {
-                        condition = `SET p_connectivity = "${connectivity}" `;
-                    } else {
-                        condition += `, p_connectivity = "${connectivity}"`;
-                    }
-                }
-                if (material) {
-                    if (condition == '') {
-                        condition = `SET p_material = "${material}" `;
-                    } else {
-                        condition += `, p_material = "${material}"`;
-                    }
-                }
+
 
 
                 if (condition !== '') {
                     var EditCurrentProject = await model.ChangeCurrentProject(condition, cp_id)
                 }
-                if (EditCurrentProject.affectedRows) {
+                if (EditCurrentProject.affectedRows > 0) {
 
                     if (files) {
                         const fileKeys = Object.keys(files).filter(item => item !== 'image');
@@ -351,12 +352,12 @@ module.exports.EditCurrentProject = async (req, res) => {
                             if (!file || !file.filepath || !file.originalFilename) continue;
 
                             const oldPath = file.filepath;
-                            const newPath = path.join(process.cwd(), '/uploads/CurrentProjects', file.originalFilename);
+                            const newPath = path.join(process.cwd(), '/uploads/current_projects', file.originalFilename);
 
                             const rawData = fs.readFileSync(oldPath);
                             fs.writeFileSync(newPath, rawData);
 
-                            const imagePath = "/uploads/CurrentProjects/" + file.originalFilename;
+                            const imagePath = "/uploads/current_projects/" + file.originalFilename;
 
                             var insertImage = await model.AddCurrentProjectImages(cp_id, imagePath);
 
@@ -364,31 +365,42 @@ module.exports.EditCurrentProject = async (req, res) => {
                             if (insertImage.affectedRows == 0) {
                                 return res.send({
                                     result: false,
-                                    message: `failed to insert CurrentProject image ${file.originalFilename}`
+                                    message: `failed to insert Current Project image ${file.originalFilename}`
                                 })
                             }
                         }
 
-                        return res.status(200).json({
-                            result: true,
-                            message: 'CurrentProject Details Updated Successfully',
-                        });
+                    }
+                    if (files.newproject) {
+                        files.newproject = Array.isArray(files.newproject) ? files.newproject[0] : files.newproject;
+
+                        var oldPath = files.newproject.filepath;
+                        var newPath =
+                            process.cwd() +
+                            "/uploads/current_projects/" + files.newproject.originalFilename
+                        let rawData = fs.readFileSync(oldPath);
+                        console.log(oldPath);
+
+                        fs.writeFileSync(newPath, rawData)
+                        var imagepath = "/uploads/current_projects/" + files.newproject.originalFilename
+
+                        var InsertTestimonialimage = await model.AddNewProjectFiles(p_id, imagepath)
 
                     }
                     return res.send({
                         result: true,
-                        message: "CurrentProject updated successfully"
+                        message: "Current Project updated successfully"
                     })
                 } else {
                     return res.send({
                         result: false,
-                        message: "failed to update CurrentProject"
+                        message: "failed to update Current Project"
                     })
                 }
             } else {
                 return res.send({
                     result: false,
-                    message: "CurrentProject does not exists"
+                    message: "Current Project does not exists"
                 })
             }
         })
